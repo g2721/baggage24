@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+			canvas { display: block; }
+		</style>
+	</head>
+	<body>
+		<script src="js/three.js-master/build/three.js"></script>
+		<script src="js/three.js-master/examples/js/controls/OrbitControls.js"></script>
+		<script type ="module">
+		  import { GLTFLoader } from './js/three.js-master/examples/jsm/loaders/GLTFLoader.js';
+			import { MathUtils } from './js/three.js-master/src/math/MathUtils.js';
+			var model, scene, camera, renderer, controls;
+
+
+			scene = new THREE.Scene();
+			camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+			renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
+
+			controls = new THREE.OrbitControls( camera, renderer.domElement );
+
+			console.log("Hallo");
+
+			const loader = new GLTFLoader();
+
+			loader.load( './world/Koffer1.glb', function ( gltf ) {
+
+
+
+				model = gltf.scene;
+				model.castShadow = true; //default is false
+				model.receiveShadow = false; //default
+				model.position.y = 0.05;
+
+				scene.add( model );
+
+			}, undefined, function ( error ) {
+
+				console.error( error );
+
+			} );
+		//	const geometry = new THREE.BoxGeometry();
+		//	const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+	//		const cube = new THREE.Mesh( geometry, material );
+ 		//	scene.add( cube );
+
+
+
+			//floorplane
+			const geometry = new THREE.PlaneGeometry( 15, 15);
+			const material = new THREE.MeshBasicMaterial( {color: 0xD3D3D3, side: THREE.DoubleSide} );
+			//material.reflectivity();
+			const plane = new THREE.Mesh( geometry, material );
+			plane.rotation.x=MathUtils.degToRad(90);
+			plane.rotation.z=MathUtils.degToRad(90);
+			plane.receiveShadow = true; //default is false
+			//plane.rotation.y=0;
+			//plane.rotation.z=0;
+			scene.add( plane );
+
+			const pointLight =
+			  new THREE.PointLight(0xFFFFFF,10,0,2);		//color,intensity,range,decay
+
+			// set its position
+			pointLight.position.x = 0;
+			pointLight.position.y = 5;
+			pointLight.position.z = 5;
+
+			// add to the scene
+			scene.add(pointLight);
+			pointLight.shadow.mapSize.width = 512; // default
+			pointLight.shadow.mapSize.height = 512; // default
+			pointLight.shadow.camera.near = 0.5; // default
+			pointLight.shadow.camera.far = 500; // default
+
+
+			const light = new THREE.AmbientLight( 0x404040, 20 ); // soft white light
+		//	scene.add( light );
+
+
+			// camera.position.z = 5;
+
+			camera.position.z = -5;
+			camera.position.y = 3;
+
+
+			controls.update();
+
+		//	const math = new MathUtils();
+
+			const animate = function () {
+				requestAnimationFrame( animate );
+
+				//model.rotation.x += 0.01;
+				if (model) {
+	    	model.rotation.y += MathUtils.degToRad(0.1);
+				}
+
+				renderer.render( scene, camera );
+			};
+
+			animate();
+		</script>
+	</body>
+</html>
